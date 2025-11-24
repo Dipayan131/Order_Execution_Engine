@@ -5,6 +5,7 @@ import { Order, OrderType, OrderSide, OrderStatus } from "../models/Order";
 import { orderQueue } from "../services/OrderQueue";
 
 const executeOrderSchema = z.object({
+  orderId: z.string().uuid().optional(), // Optional: for testing with pre-connected WebSocket
   type: z.nativeEnum(OrderType).optional(), // Default Market
   side: z.nativeEnum(OrderSide),
   amount: z.number().positive(),
@@ -20,6 +21,10 @@ export class OrderController {
       const orderRepo = AppDataSource.getRepository(Order);
       
       const order = new Order();
+      // Allow custom orderId for testing (e.g., pre-connected WebSocket)
+      if (body.orderId) {
+        order.id = body.orderId;
+      }
       order.type = body.type || OrderType.MARKET;
       order.side = body.side;
       order.amount = body.amount;

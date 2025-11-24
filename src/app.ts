@@ -15,12 +15,17 @@ export const buildApp = async () => {
 
   // Setup Broadcast Callback
   setBroadcastCallback((orderId: string, status: OrderStatus, data?: any) => {
+    console.log(`[Broadcast] Attempting to broadcast status ${status} for order ${orderId}`);
     const connections = activeConnections.get(orderId);
     if (connections) {
+      console.log(`[Broadcast] Found ${connections.size} active connection(s) for order ${orderId}`);
       const message = JSON.stringify({ orderId, status, ...data });
       for (const connection of connections) {
         connection.send(message);
+        console.log(`[Broadcast] Sent message to connection:`, message);
       }
+    } else {
+      console.log(`[Broadcast] No active connections found for order ${orderId}`);
     }
   });
 

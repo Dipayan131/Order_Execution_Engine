@@ -7,8 +7,19 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const connection = new IORedis(process.env.REDIS_URL!, {
+const redisUrl = process.env.REDIS_URL || "localhost:6379";
+console.log(`[OrderQueue] Connecting to Redis: ${redisUrl}`);
+
+const connection = new IORedis(redisUrl, {
   maxRetriesPerRequest: null,
+});
+
+connection.on("connect", () => {
+  console.log("[OrderQueue] Redis connected successfully");
+});
+
+connection.on("error", (err) => {
+  console.error("[OrderQueue] Redis connection error:", err);
 });
 
 export const orderQueue = new Queue("order-execution", { connection });
@@ -35,8 +46,10 @@ const processOrder = async (job: Job) => {
     }
 
     // 1. Routing
+    console.log(`[OrderQueue] Order ${orderId} - Setting status to ROUTING`);
     order.status = OrderStatus.ROUTING;
     await orderRepo.save(order);
+    console.log(`[OrderQueue] Order ${orderId} - Broadcasting ROUTING status`);
     broadcastStatus(orderId, OrderStatus.ROUTING);
     
     // Simulate routing delay and logic
