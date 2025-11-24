@@ -1,0 +1,67 @@
+{
+	"info": {
+		"_postman_id": "order-execution-engine",
+		"name": "Order Execution Engine",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Execute Order",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"side\": \"buy\",\n    \"amount\": 10,\n    \"inputToken\": \"SOL\",\n    \"outputToken\": \"USDC\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orders/execute",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"execute"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "WebSocket Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "ws://localhost:3000/api/orders/:orderId/ws",
+					"protocol": "ws",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						":orderId",
+						"ws"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "REPLACE_WITH_ORDER_ID"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
